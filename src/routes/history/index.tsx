@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Search, Trash2 } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 import SearchModal from "@/components/search-modal";
 import { Link } from "@tanstack/react-router";
 
@@ -51,22 +51,24 @@ function RouteComponent() {
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-md h-[650px] mx-auto overflow-hidden border-2 border-black rounded-3xl">
         {/* Header */}
-        <div className="p-4 border-b border-black flex justify-between items-center">
-          <div className="flex items-center">
-            <Link to="/">
-              <Button variant="ghost" size="icon" className="mr-2">
-                <ArrowLeft className="h-5 w-5" />
+        <div className="px-4 py-2 border-b border-black">
+          <div className="flex justify-between items-center">
+            <h1>
+              <Link to="/">ChatGUI</Link>
+            </h1>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-gray-600">
+                당신의 원활한 업무처리를 위한 도우미
+              </p>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSearchOpen(true)}
+              >
+                <Search className="h-5 w-5" />
               </Button>
-            </Link>
-            <h1 className="text-2xl font-bold">ChatGUI</h1>
+            </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsSearchOpen(true)}
-          >
-            <Search className="h-5 w-5" />
-          </Button>
         </div>
 
         {/* Chat History List */}
