@@ -22,6 +22,7 @@ export default function ChatInput({
     e.preventDefault();
     if (message.trim() && setMessages) {
       setMessages([...meassages, message]);
+      setMessage("");
     }
   };
 
