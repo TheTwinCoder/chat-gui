@@ -1,3 +1,7 @@
+import type {
+  GenerateContentConfig,
+  GenerateContentResponse,
+} from "@google/genai";
 export interface IpcApiResponse<T = void> {
   success: boolean;
   data?: T;
@@ -5,7 +9,10 @@ export interface IpcApiResponse<T = void> {
 }
 
 export interface ElectronApi {
-  geminiChat: (prompt: string) => Promise<IpcApiResponse<string>>;
+  geminiChat: (
+    prompt: string,
+    config?: GenerateContentConfig
+  ) => Promise<IpcApiResponse<GenerateContentResponse>>;
   seleniumTest: () => Promise<IpcApiResponse<void>>;
 }
 

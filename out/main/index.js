@@ -11,15 +11,17 @@ const require2 = __cjs_mod__.createRequire(import.meta.url);
 dotenv.config({ path: ".env.local" });
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-async function generateGeminiResponse(prompt) {
+async function generateGeminiResponse(prompt, config) {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-04-17",
-      contents: prompt
+      contents: prompt,
+      config
     });
+    console.log(response);
     return {
       success: true,
-      data: response.text
+      data: response
     };
   } catch (error) {
     console.error("Gemini API Error:", error);
@@ -71,9 +73,12 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
   }
 }
-ipcMain.handle("gemini:chat", async (_, prompt) => {
-  return generateGeminiResponse(prompt);
-});
+ipcMain.handle(
+  "gemini:chat",
+  async (_, prompt, config) => {
+    return generateGeminiResponse(prompt, config);
+  }
+);
 ipcMain.handle("selenium:test", async () => {
   return testChromeDriver();
 });

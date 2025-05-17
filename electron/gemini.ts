@@ -1,4 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
+import type {
+  GenerateContentConfig,
+  GenerateContentResponse,
+} from "@google/genai";
 import * as dotenv from "dotenv";
 import { IpcApiResponse } from "./preload";
 
@@ -10,16 +14,19 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 export async function generateGeminiResponse(
-  prompt: string
-): IpcApiResponse<string> {
+  prompt: string,
+  config?: GenerateContentConfig
+): IpcApiResponse<GenerateContentResponse> {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-04-17",
       contents: prompt,
+      config,
     });
+    console.log(response);
     return {
       success: true,
-      data: response.text,
+      data: response,
     };
   } catch (error) {
     console.error("Gemini API Error:", error);

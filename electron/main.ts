@@ -8,6 +8,7 @@ dotenv.config({ path: ".env.local" });
 
 import { generateGeminiResponse } from "./gemini";
 import { testChromeDriver } from "./selenium";
+import type { GenerateContentConfig } from "@google/genai";
 
 function createWindow(): void {
   // Create the browser window.
@@ -43,9 +44,12 @@ function createWindow(): void {
 }
 
 // Handle Gemini chat requests
-ipcMain.handle("gemini:chat", async (_, prompt: string) => {
-  return generateGeminiResponse(prompt);
-});
+ipcMain.handle(
+  "gemini:chat",
+  async (_, prompt: string, config?: GenerateContentConfig) => {
+    return generateGeminiResponse(prompt, config);
+  }
+);
 
 //handle selenium driver requests
 ipcMain.handle("selenium:test", async () => {

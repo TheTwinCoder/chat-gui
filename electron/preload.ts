@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
+import type { GenerateContentConfig } from "@google/genai";
 
 export type IpcApiResponse<T = void> = Promise<{
   success: boolean;
@@ -8,9 +9,10 @@ export type IpcApiResponse<T = void> = Promise<{
 }>;
 // Custom APIs for renderer
 const api = {
-  geminiChat: (prompt: string) => ipcRenderer.invoke("gemini:chat", prompt),
+  geminiChat: (prompt: string, config?: GenerateContentConfig) =>
+    ipcRenderer.invoke("gemini:chat", prompt, config),
   seleniumTest: () => ipcRenderer.invoke("selenium:test"),
-} as Record<string, (...args: unknown[]) => IpcApiResponse<unknown>>;
+};
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
 // just add to the DOM global.
