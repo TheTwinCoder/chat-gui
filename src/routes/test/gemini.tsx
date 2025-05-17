@@ -72,13 +72,13 @@ function TestGeminiAPI() {
           />
         </div>
 
-        <button
+        <Button
           type="submit"
           disabled={isLoading || !prompt.trim()}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto"
         >
           {isLoading ? "응답 대기 중..." : "전송"}
-        </button>
+        </Button>
       </form>
 
       {error && (
