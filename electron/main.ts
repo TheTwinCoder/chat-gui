@@ -12,8 +12,8 @@ function createWindow(): void {
   // Create the browser window.
   const preloadPath = path.join(__dirname, "../preload/index.mjs");
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 640,
+    width: 500,
+    height: 700,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === "linux" ? {} : {}), //app-icon

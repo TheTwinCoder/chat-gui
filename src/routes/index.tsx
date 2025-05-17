@@ -1,19 +1,70 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { Card } from "@/components/ui/card";
+// import { ScrollArea } from "@/components/ui/scroll-area";
+import ChatMessage from "@/components/chat-message";
+import ChatInput from "@/components/chat-input";
+// import FeatureList from "@/components/feature-list";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const [messages, setMessages] = useState<string[]>([""]);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const today = new Date();
+  const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 ${today.getHours()}:${today.getMinutes()}`;
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Chat GUI</h1>
-      <Link
-        to="/test-geminiapi"
-        className="inline-block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-      >
-        Gemini API 테스트하기
-      </Link>
+    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <Card className="w-full max-w-md h-[650px] mx-auto overflow-hidden border-2 border-black rounded-3xl">
+        {/* Header */}
+        <div className="p-4 border-b border-black">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold">ChatGUI</h1>
+            <p className="text-sm text-gray-600">
+              당신의 원활한 업무처리를 위한 도우미
+            </p>
+          </div>
+        </div>
+
+        {/* Chat Area */}
+        <div className="flex flex-col h-[700px] overflow-y-auto">
+          {messages.map((message, index) => (
+            <>
+              {/* user's question*/}
+              <div key={index} className="px-4 py-2">
+                <ChatMessage
+                  message={message}
+                  isUser={true}
+                  timestamp={formattedDate}
+                />
+              </div>
+              {/* assistant's answer*/}
+              <div key={index} className="px-4 py-2">
+                <ChatMessage
+                  message={message}
+                  isUser={false}
+                  timestamp={formattedDate}
+                />
+              </div>
+              <div className="border-t border-dotted border-gray-400 mx-4" />
+            </>
+          ))}
+          <div ref={bottomRef} />
+        </div>
+        <div className="sticky bottom-0 p-4 border-t border-gray-200 bg-white">
+          <ChatInput
+            placeholder="어떻게 도와드릴까요?"
+            setMessages={setMessages}
+            meassages={messages}
+          />
+        </div>
+      </Card>
     </div>
   );
 }
