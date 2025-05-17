@@ -2,18 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-declare global {
-  interface Window {
-    api: {
-      geminiChat: (prompt: string) => Promise<{
-        success: boolean;
-        data?: string;
-        message?: string;
-      }>;
-    };
-  }
-}
-
 export const Route = createFileRoute("/test/gemini")({
   component: TestGeminiAPI,
 });

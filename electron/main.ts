@@ -7,6 +7,7 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 import { generateGeminiResponse } from "./gemini";
+import { testChromeDriver } from "./selenium";
 
 function createWindow(): void {
   // Create the browser window.
@@ -44,6 +45,11 @@ function createWindow(): void {
 // Handle Gemini chat requests
 ipcMain.handle("gemini:chat", async (_, prompt: string) => {
   return generateGeminiResponse(prompt);
+});
+
+//handle selenium driver requests
+ipcMain.handle("selenium:test", async () => {
+  return testChromeDriver();
 });
 
 // This method will be called when Electron has finished

@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as TestIndexImport } from './routes/test/index'
 import { Route as HistoryIndexImport } from './routes/history/index'
+import { Route as TestSeleniumImport } from './routes/test/selenium'
 import { Route as TestGeminiImport } from './routes/test/gemini'
 
 // Create/Update Routes
@@ -33,6 +34,12 @@ const TestIndexRoute = TestIndexImport.update({
 const HistoryIndexRoute = HistoryIndexImport.update({
   id: '/history/',
   path: '/history/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TestSeleniumRoute = TestSeleniumImport.update({
+  id: '/test/selenium',
+  path: '/test/selenium',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestGeminiImport
       parentRoute: typeof rootRoute
     }
+    '/test/selenium': {
+      id: '/test/selenium'
+      path: '/test/selenium'
+      fullPath: '/test/selenium'
+      preLoaderRoute: typeof TestSeleniumImport
+      parentRoute: typeof rootRoute
+    }
     '/history/': {
       id: '/history/'
       path: '/history'
@@ -82,6 +96,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/test/gemini': typeof TestGeminiRoute
+  '/test/selenium': typeof TestSeleniumRoute
   '/history': typeof HistoryIndexRoute
   '/test': typeof TestIndexRoute
 }
@@ -89,6 +104,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/test/gemini': typeof TestGeminiRoute
+  '/test/selenium': typeof TestSeleniumRoute
   '/history': typeof HistoryIndexRoute
   '/test': typeof TestIndexRoute
 }
@@ -97,22 +113,30 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/test/gemini': typeof TestGeminiRoute
+  '/test/selenium': typeof TestSeleniumRoute
   '/history/': typeof HistoryIndexRoute
   '/test/': typeof TestIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/test/gemini' | '/history' | '/test'
+  fullPaths: '/' | '/test/gemini' | '/test/selenium' | '/history' | '/test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/test/gemini' | '/history' | '/test'
-  id: '__root__' | '/' | '/test/gemini' | '/history/' | '/test/'
+  to: '/' | '/test/gemini' | '/test/selenium' | '/history' | '/test'
+  id:
+    | '__root__'
+    | '/'
+    | '/test/gemini'
+    | '/test/selenium'
+    | '/history/'
+    | '/test/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   TestGeminiRoute: typeof TestGeminiRoute
+  TestSeleniumRoute: typeof TestSeleniumRoute
   HistoryIndexRoute: typeof HistoryIndexRoute
   TestIndexRoute: typeof TestIndexRoute
 }
@@ -120,6 +144,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TestGeminiRoute: TestGeminiRoute,
+  TestSeleniumRoute: TestSeleniumRoute,
   HistoryIndexRoute: HistoryIndexRoute,
   TestIndexRoute: TestIndexRoute,
 }
@@ -136,6 +161,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/test/gemini",
+        "/test/selenium",
         "/history/",
         "/test/"
       ]
@@ -145,6 +171,9 @@ export const routeTree = rootRoute
     },
     "/test/gemini": {
       "filePath": "test/gemini.tsx"
+    },
+    "/test/selenium": {
+      "filePath": "test/selenium.tsx"
     },
     "/history/": {
       "filePath": "history/index.tsx"
