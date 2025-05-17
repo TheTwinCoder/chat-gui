@@ -10,8 +10,8 @@ dotenv.config({ path: ".env.local" });
 function createWindow() {
   const preloadPath = path.join(__dirname, "../preload/index.mjs");
   const mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 640,
+    width: 500,
+    height: 700,
     show: false,
     autoHideMenuBar: true,
     ...process.platform === "linux" ? {} : {},

@@ -4,14 +4,18 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import ChatMessage from "@/components/chat-message";
 import ChatInput from "@/components/chat-input";
 import FeatureList from "@/components/feature-list";
+import { useState } from "react";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
 
+
 function RouteComponent() {
+  const [messages, setMessages] = useState<string[]>([""]);
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 py-2">
       <Card className="w-full max-w-md mx-auto overflow-hidden border-2 border-black rounded-3xl">
         {/* Header */}
         <div className="p-4 border-b border-black">
@@ -25,11 +29,12 @@ function RouteComponent() {
 
         {/* Chat Area */}
         <div className="flex flex-col h-[600px]">
+
           {/* Message Display */}
           <div className="p-4">
             <ChatMessage
               message="지금 페이지에서 무엇에서 궁금하를 하고 싶으신 어떻게 하면 좋을까요?"
-              isUser={false}
+              isUser={true}
               timestamp="2023-5-17 오후 3:24"
             />
           </div>
@@ -59,7 +64,7 @@ function RouteComponent() {
 
           {/* Input Area */}
           <div className="p-4 border-t border-gray-200">
-            <ChatInput placeholder="어떻게 도와드릴까요?" />
+            <ChatInput placeholder="어떻게 도와드릴까요?" setMessages={setMessages} meassages={messages}/>
           </div>
         </div>
       </Card>
