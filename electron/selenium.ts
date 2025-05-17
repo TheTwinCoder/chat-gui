@@ -2,7 +2,7 @@ import { Builder } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
 import path from "path";
 import { JSDOM } from "jsdom";
-
+import getTag from "./gettag";
 const URL = "https://www.google.com/";
 export async function testChromeDriver() {
   // const chromedriverPath = "C:\\chatgui\\chat-gui\\electron\\chromedriver.exe";
@@ -45,6 +45,7 @@ export async function testChromeDriver() {
     // 정제된 HTML
     cleanedHTML = document.documentElement.outerHTML;
     console.log("Cleaned HTML:", cleanedHTML);
+    getTag(cleanedHTML, "나는 gemail을 사용하고 싶어!");
   } finally {
     await driver.quit();
   }

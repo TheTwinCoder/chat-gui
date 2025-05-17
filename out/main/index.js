@@ -6,22 +6,61 @@ import { GoogleGenAI } from "@google/genai";
 import { Builder } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
 import { JSDOM } from "jsdom";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import fs from "fs";
 import __cjs_mod__ from "node:module";
 const __filename = import.meta.filename;
 const __dirname = import.meta.dirname;
 const require2 = __cjs_mod__.createRequire(import.meta.url);
 dotenv.config({ path: ".env.local" });
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-async function generateGeminiResponse(prompt) {
+const GEMINI_API_KEY$1 = process.env.GEMINI_API_KEY;
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY$1 });
+async function generateGeminiResponse(prompt2) {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-04-17",
-      contents: prompt
+      contents: prompt2
     });
     return {
       success: true,
       data: response.text
+    };
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Unknown error occurred"
+    };
+  }
+}
+dotenv.config({ path: ".env.local" });
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || "");
+const prompt = JSON.parse(
+  fs.readFileSync("./electron/prompt.json", "utf-8")
+).prompt;
+async function getTag(html, purpose) {
+  try {
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash-preview-04-17"
+    });
+    const chat = model.startChat({
+      history: [
+        {
+          role: "user",
+          parts: [{ text: prompt }]
+        }
+      ],
+      generationConfig: {
+        maxOutputTokens: 100
+      }
+    });
+    const msg = purpose + "\n\n" + html;
+    const result = await chat.sendMessage(msg);
+    console.log(result);
+    return {
+      success: true,
+      data: String(result)
     };
   } catch (error) {
     console.error("Gemini API Error:", error);
@@ -54,6 +93,7 @@ async function testChromeDriver() {
     document.querySelectorAll("[style]").forEach((el) => el.removeAttribute("style"));
     cleanedHTML = document.documentElement.outerHTML;
     console.log("Cleaned HTML:", cleanedHTML);
+    getTag(cleanedHTML, "나는 gemail을 사용하고 싶어!");
   } finally {
     await driver.quit();
   }
@@ -92,8 +132,8 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
   }
 }
-ipcMain.handle("gemini:chat", async (_, prompt) => {
-  return generateGeminiResponse(prompt);
+ipcMain.handle("gemini:chat", async (_, prompt2) => {
+  return generateGeminiResponse(prompt2);
 });
 ipcMain.handle("selenium:test", async () => {
   return testChromeDriver();
