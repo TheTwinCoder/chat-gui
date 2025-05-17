@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-export const Route = createFileRoute("/test-geminiapi/")({
+export const Route = createFileRoute("/test/gemini")({
   component: TestGeminiAPI,
 });
 

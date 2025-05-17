@@ -32,7 +32,14 @@ function RouteComponent() {
         {/* Header */}
         <div className="px-4 py-2 border-b border-black">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">ChatGUI</h1>
+            <h1
+              className="text-2xl font-bold"
+              onClick={() => {
+                window.location.href = "/test";
+              }}
+            >
+              ChatGUI
+            </h1>
             <p className="text-sm text-gray-600">
               당신의 원활한 업무처리를 위한 도우미
             </p>
