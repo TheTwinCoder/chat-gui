@@ -12,12 +12,19 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as TestGeminiapiIndexImport } from './routes/test-geminiapi.index'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TestGeminiapiIndexRoute = TestGeminiapiIndexImport.update({
+  id: '/test-geminiapi/',
+  path: '/test-geminiapi/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -32,6 +39,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/test-geminiapi/': {
+      id: '/test-geminiapi/'
+      path: '/test-geminiapi'
+      fullPath: '/test-geminiapi'
+      preLoaderRoute: typeof TestGeminiapiIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -39,32 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/test-geminiapi': typeof TestGeminiapiIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/test-geminiapi': typeof TestGeminiapiIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/test-geminiapi/': typeof TestGeminiapiIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/test-geminiapi'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/test-geminiapi'
+  id: '__root__' | '/' | '/test-geminiapi/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TestGeminiapiIndexRoute: typeof TestGeminiapiIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TestGeminiapiIndexRoute: TestGeminiapiIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +96,15 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/test-geminiapi/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/test-geminiapi/": {
+      "filePath": "test-geminiapi.index.tsx"
     }
   }
 }
