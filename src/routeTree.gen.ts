@@ -37,6 +37,12 @@ const HistoryIndexRoute = HistoryIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any);
 
+const TestSeleniumRoute = TestSeleniumImport.update({
+  id: '/test/selenium',
+  path: '/test/selenium',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const TestGeminiRoute = TestGeminiImport.update({
   id: "/test/gemini",
   path: "/test/gemini",
@@ -149,6 +155,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TestGeminiRoute: TestGeminiRoute,
+  TestSeleniumRoute: TestSeleniumRoute,
   HistoryIndexRoute: HistoryIndexRoute,
   TestIndexRoute: TestIndexRoute,
   ChatIndexInitMessageRoute: ChatIndexInitMessageRoute,
@@ -166,6 +173,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/test/gemini",
+        "/test/selenium",
         "/history/",
         "/test/",
         "/chat/index/$initMessage"
@@ -176,6 +184,9 @@ export const routeTree = rootRoute
     },
     "/test/gemini": {
       "filePath": "test/gemini.tsx"
+    },
+    "/test/selenium": {
+      "filePath": "test/selenium.tsx"
     },
     "/history/": {
       "filePath": "history/index.tsx"

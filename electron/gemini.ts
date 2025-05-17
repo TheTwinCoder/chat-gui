@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import * as dotenv from "dotenv";
+import { IpcApiResponse } from "./preload";
 
 // TODO: duplicate env load code w/main.ts
 dotenv.config({ path: ".env.local" });
@@ -8,7 +9,9 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-export async function generateGeminiResponse(prompt: string) {
+export async function generateGeminiResponse(
+  prompt: string
+): IpcApiResponse<string> {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-04-17",
