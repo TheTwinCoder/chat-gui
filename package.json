@@ -13,6 +13,7 @@
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@tailwindcss/vite": "^4.1.7",
+    "dotenv": "^16.5.0",
     "electron": "^36.2.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

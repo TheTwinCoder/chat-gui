@@ -1,10 +1,14 @@
 import { app, BrowserWindow, shell } from "electron";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
+import * as dotenv from "dotenv";
 import __cjs_mod__ from "node:module";
 const __filename = import.meta.filename;
 const __dirname = import.meta.dirname;
 const require2 = __cjs_mod__.createRequire(import.meta.url);
 const path = require2("node:path");
+const envPath = path.join(__dirname, "../../.env.local");
+console.log("Looking for .env.local at:", envPath);
+dotenv.config({ path: envPath });
 function createWindow() {
   const preloadPath = path.join(__dirname, "../preload/index.mjs");
   const mainWindow = new BrowserWindow({
@@ -22,6 +26,7 @@ function createWindow() {
   });
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
+    console.log("GEMINI_API_KEY:", process.env.GEMINI_API_KEY);
   });
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url);

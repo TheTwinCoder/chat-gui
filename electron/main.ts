@@ -1,6 +1,12 @@
 import { app, shell, BrowserWindow, ipcMain } from "electron";
 const path = require("node:path");
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
+import * as dotenv from "dotenv";
+
+// Load environment variables from .env.local
+const envPath = path.join(__dirname, "../../.env.local");
+console.log("Looking for .env.local at:", envPath);
+dotenv.config({ path: envPath });
 
 function createWindow(): void {
   // Create the browser window.
@@ -19,6 +25,8 @@ function createWindow(): void {
   });
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
+    // Log the API key when window is ready
+    console.log("GEMINI_API_KEY:", process.env.GEMINI_API_KEY);
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
