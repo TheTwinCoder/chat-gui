@@ -19,14 +19,13 @@ function RouteComponent() {
 
   useEffect(() => {
     if (initMessage) {
-      const initalUserMsg: UserMsgType = {
+      const initialUserMsg: UserMsgType = {
         type: "user",
         text: initMessage,
         time: new Date(),
         imageList: [],
       };
-      setPendingMsg(initalUserMsg);
-      setMessages([initalUserMsg]);
+      handleNewMessage(initialUserMsg.text);
     }
   }, [initMessage]);
 
