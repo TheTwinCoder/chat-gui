@@ -13,6 +13,9 @@ export const Route = createFileRoute("/")({
 function RouteComponent() {
   const [messages, setMessages] = useState<string[]>([""]);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const today = new Date();
+  const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 ${today.getHours()}:${today.getMinutes()}`;
+  
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -38,7 +41,7 @@ function RouteComponent() {
                 <ChatMessage
                   message={message}
                   isUser={true}
-                  timestamp="2023-5-17 오후 3:24"
+                  timestamp={formattedDate}
                 />
               </div>
               {/* assistant's answer*/}
@@ -46,7 +49,7 @@ function RouteComponent() {
                 <ChatMessage
                   message={message}
                   isUser={false}
-                  timestamp="2023-5-17 오후 3:24"
+                  timestamp={formattedDate}
                 />
               </div>
               <div className="border-t border-dotted border-gray-400 mx-4" />
