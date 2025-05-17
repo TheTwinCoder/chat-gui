@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as TestIndexImport } from './routes/test/index'
 import { Route as HistoryIndexImport } from './routes/history/index'
+import { Route as ChatingIndexImport } from './routes/chating/index'
 import { Route as TestGeminiImport } from './routes/test/gemini'
 
 // Create/Update Routes
@@ -33,6 +34,12 @@ const TestIndexRoute = TestIndexImport.update({
 const HistoryIndexRoute = HistoryIndexImport.update({
   id: '/history/',
   path: '/history/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ChatingIndexRoute = ChatingIndexImport.update({
+  id: '/chating/',
+  path: '/chating/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestGeminiImport
       parentRoute: typeof rootRoute
     }
+    '/chating/': {
+      id: '/chating/'
+      path: '/chating'
+      fullPath: '/chating'
+      preLoaderRoute: typeof ChatingIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/history/': {
       id: '/history/'
       path: '/history'
@@ -82,6 +96,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/test/gemini': typeof TestGeminiRoute
+  '/chating': typeof ChatingIndexRoute
   '/history': typeof HistoryIndexRoute
   '/test': typeof TestIndexRoute
 }
@@ -89,6 +104,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/test/gemini': typeof TestGeminiRoute
+  '/chating': typeof ChatingIndexRoute
   '/history': typeof HistoryIndexRoute
   '/test': typeof TestIndexRoute
 }
@@ -97,22 +113,24 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/test/gemini': typeof TestGeminiRoute
+  '/chating/': typeof ChatingIndexRoute
   '/history/': typeof HistoryIndexRoute
   '/test/': typeof TestIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/test/gemini' | '/history' | '/test'
+  fullPaths: '/' | '/test/gemini' | '/chating' | '/history' | '/test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/test/gemini' | '/history' | '/test'
-  id: '__root__' | '/' | '/test/gemini' | '/history/' | '/test/'
+  to: '/' | '/test/gemini' | '/chating' | '/history' | '/test'
+  id: '__root__' | '/' | '/test/gemini' | '/chating/' | '/history/' | '/test/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   TestGeminiRoute: typeof TestGeminiRoute
+  ChatingIndexRoute: typeof ChatingIndexRoute
   HistoryIndexRoute: typeof HistoryIndexRoute
   TestIndexRoute: typeof TestIndexRoute
 }
@@ -120,6 +138,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TestGeminiRoute: TestGeminiRoute,
+  ChatingIndexRoute: ChatingIndexRoute,
   HistoryIndexRoute: HistoryIndexRoute,
   TestIndexRoute: TestIndexRoute,
 }
@@ -136,6 +155,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/test/gemini",
+        "/chating/",
         "/history/",
         "/test/"
       ]
@@ -145,6 +165,9 @@ export const routeTree = rootRoute
     },
     "/test/gemini": {
       "filePath": "test/gemini.tsx"
+    },
+    "/chating/": {
+      "filePath": "chating/index.tsx"
     },
     "/history/": {
       "filePath": "history/index.tsx"
