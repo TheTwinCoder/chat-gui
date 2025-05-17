@@ -12,7 +12,8 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
-import { Route as TestGeminiapiIndexImport } from './routes/test-geminiapi.index'
+import { Route as TestIndexImport } from './routes/test/index'
+import { Route as TestGeminiImport } from './routes/test/gemini'
 
 // Create/Update Routes
 
@@ -22,9 +23,15 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const TestGeminiapiIndexRoute = TestGeminiapiIndexImport.update({
-  id: '/test-geminiapi/',
-  path: '/test-geminiapi/',
+const TestIndexRoute = TestIndexImport.update({
+  id: '/test/',
+  path: '/test/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TestGeminiRoute = TestGeminiImport.update({
+  id: '/test/gemini',
+  path: '/test/gemini',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +46,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/test-geminiapi/': {
-      id: '/test-geminiapi/'
-      path: '/test-geminiapi'
-      fullPath: '/test-geminiapi'
-      preLoaderRoute: typeof TestGeminiapiIndexImport
+    '/test/gemini': {
+      id: '/test/gemini'
+      path: '/test/gemini'
+      fullPath: '/test/gemini'
+      preLoaderRoute: typeof TestGeminiImport
+      parentRoute: typeof rootRoute
+    }
+    '/test/': {
+      id: '/test/'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/test-geminiapi': typeof TestGeminiapiIndexRoute
+  '/test/gemini': typeof TestGeminiRoute
+  '/test': typeof TestIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/test-geminiapi': typeof TestGeminiapiIndexRoute
+  '/test/gemini': typeof TestGeminiRoute
+  '/test': typeof TestIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/test-geminiapi/': typeof TestGeminiapiIndexRoute
+  '/test/gemini': typeof TestGeminiRoute
+  '/test/': typeof TestIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/test-geminiapi'
+  fullPaths: '/' | '/test/gemini' | '/test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/test-geminiapi'
-  id: '__root__' | '/' | '/test-geminiapi/'
+  to: '/' | '/test/gemini' | '/test'
+  id: '__root__' | '/' | '/test/gemini' | '/test/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  TestGeminiapiIndexRoute: typeof TestGeminiapiIndexRoute
+  TestGeminiRoute: typeof TestGeminiRoute
+  TestIndexRoute: typeof TestIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  TestGeminiapiIndexRoute: TestGeminiapiIndexRoute,
+  TestGeminiRoute: TestGeminiRoute,
+  TestIndexRoute: TestIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +116,18 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/test-geminiapi/"
+        "/test/gemini",
+        "/test/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/test-geminiapi/": {
-      "filePath": "test-geminiapi.index.tsx"
+    "/test/gemini": {
+      "filePath": "test/gemini.tsx"
+    },
+    "/test/": {
+      "filePath": "test/index.tsx"
     }
   }
 }
