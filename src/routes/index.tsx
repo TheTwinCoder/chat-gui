@@ -15,7 +15,7 @@ function RouteComponent() {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const today = new Date();
   const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 ${today.getHours()}:${today.getMinutes()}`;
-  
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -33,7 +33,7 @@ function RouteComponent() {
         </div>
 
         {/* Chat Area */}
-        <div className="flex flex-col h-[600px] overflow-y-auto">
+        <div className="flex flex-col h-[700px] overflow-y-auto">
           {messages.map((message, index) => (
             <>
               {/* user's question*/}
@@ -55,15 +55,14 @@ function RouteComponent() {
               <div className="border-t border-dotted border-gray-400 mx-4" />
             </>
           ))}
-
-          <div className="sticky bottom-0 p-4 border-t border-gray-200 bg-white">
-            <ChatInput
-              placeholder="어떻게 도와드릴까요?"
-              setMessages={setMessages}
-              meassages={messages}
-            />
-          </div>
           <div ref={bottomRef} />
+        </div>
+        <div className="sticky bottom-0 p-4 border-t border-gray-200 bg-white">
+          <ChatInput
+            placeholder="어떻게 도와드릴까요?"
+            setMessages={setMessages}
+            meassages={messages}
+          />
         </div>
       </Card>
     </div>
