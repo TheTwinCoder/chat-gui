@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import * as dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import { Builder } from "selenium-webdriver";
+import chrome from "selenium-webdriver/chrome.js";
 import __cjs_mod__ from "node:module";
 const __filename = import.meta.filename;
 const __dirname = import.meta.dirname;
@@ -30,7 +31,9 @@ async function generateGeminiResponse(prompt) {
   }
 }
 async function testChromeDriver() {
-  const driver = await new Builder().forBrowser("chrome").build();
+  const chromedriverPath = "C:\\chatgui\\chat-gui\\electron\\chromedriver.exe";
+  const serviceBuilder = new chrome.ServiceBuilder(chromedriverPath);
+  const driver = await new Builder().forBrowser("chrome").setChromeService(serviceBuilder).build();
   try {
     await driver.get("https://www.example.com");
     await new Promise((resolve) => setTimeout(resolve, 3e3));
