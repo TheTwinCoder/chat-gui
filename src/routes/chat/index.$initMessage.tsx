@@ -67,52 +67,33 @@ function RouteComponent() {
   }, [messages]);
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <Card className="w-full max-w-md h-[650px] mx-auto overflow-hidden border-2 border-black rounded-3xl">
-        {/* Header */}
-        <div className="px-4 py-2 border-b border-black">
-          <div className="flex justify-between items-center">
-            <h1
-              className="text-2xl font-bold"
-              onClick={() => {
-                window.location.href = "/test";
-              }}
-            >
-              ChatGUI
-            </h1>
-            <p className="text-sm text-gray-600">
-              손쉬운 컴퓨터 사용을 위한 도우미
-            </p>
+    <div className="w-full max-w-md h-[650px] mx-auto overflow-hidden">
+      {/* Chat Area */}
+      <div className="flex flex-col h-[600px] py-10 overflow-y-auto">
+        {messages.map((msg, index) => (
+          <div key={index} className="px-4 py-2">
+            {msg.type === "user" ? (
+              <UserMsg text={msg.text} time={msg.time} />
+            ) : (
+              <AiMsg text={msg.text} time={msg.time} />
+            )}
           </div>
-        </div>
-
-        {/* Chat Area */}
-        <div className="flex flex-col h-[700px] overflow-y-auto">
-          {messages.map((msg, index) => (
-            <div key={index} className="px-4 py-2">
-              {msg.type === "user" ? (
-                <UserMsg text={msg.text} time={msg.time} />
-              ) : (
-                <AiMsg text={msg.text} time={msg.time} />
-              )}
-            </div>
-          ))}
-          {pendingMsg && (
-            <div className="px-4 py-2">
-              <LoadingMsg />
-            </div>
-          )}
-          {error && <div className="px-4 py-2 text-red-500">{error}</div>}
-          <div ref={bottomRef} />
-        </div>
-        <div className="sticky bottom-0 p-2 border-t border-gray-200 bg-white">
-          <ChatInput
-            placeholder="어떻게 도와드릴까요?"
-            onNewMessage={handleNewMessage}
-            disabled={!!pendingMsg}
-          />
-        </div>
-      </Card>
+        ))}
+        {pendingMsg && (
+          <div className="px-4 py-2">
+            <LoadingMsg />
+          </div>
+        )}
+        {error && <div className="px-4 py-2 text-red-500">{error}</div>}
+        <div ref={bottomRef} />
+      </div>
+      <div className="sticky bottom-0 p-2 border-t border-gray-200">
+        <ChatInput
+          placeholder="어떻게 도와드릴까요?"
+          onNewMessage={handleNewMessage}
+          disabled={!!pendingMsg}
+        />
+      </div>
     </div>
   );
 }

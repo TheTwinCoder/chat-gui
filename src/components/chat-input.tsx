@@ -38,15 +38,15 @@ export default function ChatInput({
         value={input}
         onChange={(e) => setInput(e.target.value)}
         placeholder={placeholder}
-        className="flex-1 border-2 border-gray-300 rounded-xl"
+        className="flex-1 border-2 border-black rounded-xl"
       />
       <Button
         type="submit"
         size="icon"
-        className="rounded-full bg-gray-100 border-2 border-gray-300 hover:bg-gray-200"
+        className="rounded-full bg-gray-100 border-2 border-black hover:bg-gray-200"
         disabled={isDisabled}
       >
-        <ChevronRight className="h-5 w-5 text-gray-700" />
+        <ChevronRight className="h-5 w-5 text-black" />
       </Button>
     </form>
   );
