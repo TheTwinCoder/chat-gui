@@ -23,7 +23,7 @@ function TestGeminiAPI() {
     try {
       const result = await window.api.geminiChat(prompt);
       if (result.success && result.data) {
-        setResponse(result.data.text!);
+        setResponse(result.data!.candidates![0].content!.parts![0].text!);
       } else {
         setError(result.message || "알 수 없는 오류가 발생했습니다.");
       }

@@ -17,14 +17,13 @@ export const QuestionSchema = z.object({
 });
 
 export const QuestionWithAnswerSchema = QuestionSchema.extend({
-  answer: z.string(),
+  answer: z.string().optional(),
 });
 
 export type QuestionType = z.infer<typeof QuestionSchema>;
 export type QuestionWithAnswerType = z.infer<typeof QuestionWithAnswerSchema>;
 
 export const QuestionResponseSchema = z.object({
-  isStructuredResult: z.literal(false),
   questions: z.array(QuestionSchema),
 });
 
@@ -39,7 +38,7 @@ export const GoalSchema = z.object({
 });
 
 export const GoalResponseSchema = GoalSchema.extend({
-  isStructuredResult: z.literal(true),
+  structuredResult: GoalSchema,
 });
 
 export type GoalType = z.infer<typeof GoalSchema>;
