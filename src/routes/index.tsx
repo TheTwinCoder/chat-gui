@@ -6,6 +6,7 @@ import ChatInput from "@/components/chat-input";
 import { useEffect, useRef, useState } from "react";
 import { UserMsg, AiMsg, LoadingMsg } from "@/components/chat/message";
 import type { AiMsgType, MsgType, UserMsgType } from "@/types/message";
+import { determineGoal } from "@/lib/gemini";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -27,17 +28,19 @@ function RouteComponent() {
     setMessages([...messages, newUserMsg]);
 
     try {
-      const result = await window.api.geminiChat(newUserMsg.text);
+      const result = await determineGoal.initial(newUserMsg.text);
       if (result.success && result.data) {
+        console.log(result.data);
+
         const newAiMsg: AiMsgType = {
           type: "ai",
-          text: result.data,
+          text: JSON.stringify(result.data),
           time: new Date(),
         };
         setMessages([...messages, newUserMsg, newAiMsg]);
         setPendingMsg(null);
       } else {
-        setError(result.message || "알 수 없는 오류가 발생했습니다.");
+        setError("알 수 없는 오류가 발생했습니다.");
       }
     } catch (err) {
       setError(
