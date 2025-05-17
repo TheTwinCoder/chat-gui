@@ -1,33 +1,58 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 // import { ScrollArea } from "@/components/ui/scroll-area";
-import ChatMessage from "@/components/chat-message";
 import ChatInput from "@/components/chat-input";
 // import FeatureList from "@/components/feature-list";
 import { useEffect, useRef, useState } from "react";
-import { History } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { UserMsg, AiMsg, LoadingMsg } from "@/components/chat/message";
+import type { AiMsgType, MsgType, UserMsgType } from "@/types/message";
+
 export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
 
-export type meassageType = {
-  userMessage: string;
-  aiMessage: string;
-};
-
 function RouteComponent() {
-  const [messages, setMessages] = useState<meassageType[]>([
-    { userMessage: "", aiMessage: "" },
-  ]);
-  const bottomRef = useRef<HTMLDivElement | null>(null);
-  const today = new Date();
-  const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 ${today.getHours()}:${today.getMinutes()}`;
+  const [messages, setMessages] = useState<MsgType[]>([]);
+  const [pendingMsg, setPendingMsg] = useState<UserMsgType | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
+  const handleNewMessage = async (text: string) => {
+    const newUserMsg: UserMsgType = {
+      type: "user",
+      text,
+      time: new Date(),
+      imageList: [],
+    };
+    setPendingMsg(newUserMsg);
+    setMessages([...messages, newUserMsg]);
+
+    try {
+      const result = await window.api.geminiChat(newUserMsg.text);
+      if (result.success && result.data) {
+        const newAiMsg: AiMsgType = {
+          type: "ai",
+          text: result.data,
+          time: new Date(),
+        };
+        setMessages([...messages, newUserMsg, newAiMsg]);
+        setPendingMsg(null);
+      } else {
+        setError(result.message || "알 수 없는 오류가 발생했습니다.");
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다."
+      );
+    } finally {
+      setPendingMsg(null);
+    }
+  };
+
+  const bottomRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-md h-[650px] mx-auto overflow-hidden border-2 border-black rounded-3xl">
@@ -42,49 +67,36 @@ function RouteComponent() {
             >
               ChatGUI
             </h1>
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-gray-600">
-                당신의 원활한 업무처리를 위한 도우미
-              </p>
-              <Link to="/history">
-                <Button variant="ghost" size="sm" className="ml-2">
-                  <History className="h-5 w-5" />
-                </Button>
-              </Link>
-            </div>
+            <p className="text-sm text-gray-600">
+              손쉬운 컴퓨터 사용을 위한 도우미
+            </p>
           </div>
         </div>
 
         {/* Chat Area */}
         <div className="flex flex-col h-[700px] overflow-y-auto">
-          {messages.map((message, index) => (
-            <>
-              {/* user's question*/}
-              <div key={index} className="px-4 py-2">
-                <ChatMessage
-                  message={message.userMessage}
-                  isUser={true}
-                  timestamp={formattedDate}
-                />
-              </div>
-              {/* assistant's answer*/}
-              <div key={index} className="px-4 py-2">
-                <ChatMessage
-                  message={message.aiMessage}
-                  isUser={false}
-                  timestamp={formattedDate}
-                />
-              </div>
-              <div className="border-t border-dotted border-gray-400 mx-4" />
-            </>
+          {messages.map((msg, index) => (
+            <div key={index} className="px-4 py-2">
+              {msg.type === "user" ? (
+                <UserMsg text={msg.text} time={msg.time} />
+              ) : (
+                <AiMsg text={msg.text} time={msg.time} />
+              )}
+            </div>
           ))}
+          {pendingMsg && (
+            <div className="px-4 py-2">
+              <LoadingMsg />
+            </div>
+          )}
+          {error && <div className="px-4 py-2 text-red-500">{error}</div>}
           <div ref={bottomRef} />
         </div>
         <div className="sticky bottom-0 p-2 border-t border-gray-200 bg-white">
           <ChatInput
             placeholder="어떻게 도와드릴까요?"
-            setMessages={setMessages}
-            messages={messages}
+            onNewMessage={handleNewMessage}
+            disabled={!!pendingMsg}
           />
         </div>
       </Card>
