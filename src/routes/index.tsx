@@ -10,8 +10,15 @@ export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
 
+export type meassageType = {
+  userMessage: string;
+  aiMessage: string;
+};
+
 function RouteComponent() {
-  const [messages, setMessages] = useState<string[]>([""]);
+  const [messages, setMessages] = useState<meassageType[]>([
+    { userMessage: "", aiMessage: "" },
+  ]);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const today = new Date();
   const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 ${today.getHours()}:${today.getMinutes()}`;
@@ -23,7 +30,7 @@ function RouteComponent() {
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-md h-[650px] mx-auto overflow-hidden border-2 border-black rounded-3xl">
         {/* Header */}
-        <div className="p-4 border-b border-black">
+        <div className="px-4 py-2 border-b border-black">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">ChatGUI</h1>
             <p className="text-sm text-gray-600">
@@ -39,7 +46,7 @@ function RouteComponent() {
               {/* user's question*/}
               <div key={index} className="px-4 py-2">
                 <ChatMessage
-                  message={message}
+                  message={message.userMessage}
                   isUser={true}
                   timestamp={formattedDate}
                 />
@@ -47,7 +54,7 @@ function RouteComponent() {
               {/* assistant's answer*/}
               <div key={index} className="px-4 py-2">
                 <ChatMessage
-                  message={message}
+                  message={message.aiMessage}
                   isUser={false}
                   timestamp={formattedDate}
                 />
@@ -57,11 +64,11 @@ function RouteComponent() {
           ))}
           <div ref={bottomRef} />
         </div>
-        <div className="sticky bottom-0 p-4 border-t border-gray-200 bg-white">
+        <div className="sticky bottom-0 p-2 border-t border-gray-200 bg-white">
           <ChatInput
             placeholder="어떻게 도와드릴까요?"
             setMessages={setMessages}
-            meassages={messages}
+            messages={messages}
           />
         </div>
       </Card>

@@ -4,15 +4,16 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import type { meassageType } from "@/routes/index";
 
 interface ChatInputProps {
-  meassages: string[];
+  messages: meassageType[];
   placeholder?: string;
-  setMessages: (message: string[]) => void;
+  setMessages: (message: meassageType[]) => void;
 }
 
 export default function ChatInput({
-  meassages,
+  messages,
   placeholder = "메시지를 입력하세요...",
   setMessages,
 }: ChatInputProps) {
@@ -21,7 +22,7 @@ export default function ChatInput({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim() && setMessages) {
-      setMessages([...meassages, message]);
+      setMessages([...messages, { userMessage: message, aiMessage: "" }]);
       setMessage("");
     }
   };
