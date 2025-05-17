@@ -1,7 +1,8 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
 const api = {
-  geminiChat: (prompt) => ipcRenderer.invoke("gemini:chat", prompt)
+  geminiChat: (prompt) => ipcRenderer.invoke("gemini:chat", prompt),
+  seleniumTest: () => ipcRenderer.invoke("selenium:test")
 };
 if (process.contextIsolated) {
   try {

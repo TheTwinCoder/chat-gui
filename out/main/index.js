@@ -3,6 +3,7 @@ import path from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import * as dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
+import { Builder } from "selenium-webdriver";
 import __cjs_mod__ from "node:module";
 const __filename = import.meta.filename;
 const __dirname = import.meta.dirname;
@@ -27,6 +28,19 @@ async function generateGeminiResponse(prompt) {
       message: error instanceof Error ? error.message : "Unknown error occurred"
     };
   }
+}
+async function testChromeDriver() {
+  const driver = await new Builder().forBrowser("chrome").build();
+  try {
+    await driver.get("https://www.example.com");
+    await new Promise((resolve) => setTimeout(resolve, 3e3));
+  } finally {
+    await driver.quit();
+  }
+  return {
+    success: true,
+    message: "Chrome driver test successful"
+  };
 }
 dotenv.config({ path: ".env.local" });
 function createWindow() {
@@ -59,6 +73,9 @@ function createWindow() {
 }
 ipcMain.handle("gemini:chat", async (_, prompt) => {
   return generateGeminiResponse(prompt);
+});
+ipcMain.handle("selenium:test", async () => {
+  return testChromeDriver();
 });
 app.whenReady().then(() => {
   electronApp.setAppUserModelId("com.electron");

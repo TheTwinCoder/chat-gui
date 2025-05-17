@@ -10,6 +10,7 @@ function RouteComponent() {
     { path: "/", label: "테스트 나가기" },
     { path: "/test", label: "테스트 메인" },
     { path: "/test/gemini", label: "Gemini API 테스트" },
+    { path: "/test/selenium", label: "Selenium 테스트" },
   ];
 
   return (
