@@ -7,14 +7,28 @@ import { useEffect, useRef, useState } from "react";
 import { UserMsg, AiMsg, LoadingMsg } from "@/components/chat/message";
 import type { AiMsgType, MsgType, UserMsgType } from "@/types/message";
 
-export const Route = createFileRoute("/chating/")({
+export const Route = createFileRoute("/chat/index/$initMessage")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const { initMessage } = Route.useParams();
   const [messages, setMessages] = useState<MsgType[]>([]);
   const [pendingMsg, setPendingMsg] = useState<UserMsgType | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initMessage) {
+      const initalUserMsg: UserMsgType = {
+        type: "user",
+        text: initMessage,
+        time: new Date(),
+        imageList: [],
+      };
+      setPendingMsg(initalUserMsg);
+      setMessages([initalUserMsg]);
+    }
+  }, [initMessage]);
 
   const handleNewMessage = async (text: string) => {
     const newUserMsg: UserMsgType = {
