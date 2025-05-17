@@ -10,32 +10,32 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
-import { Route as TestIndexImport } from './routes/test/index'
-import { Route as HistoryIndexImport } from './routes/history/index'
-import { Route as TestSeleniumImport } from './routes/test/selenium'
-import { Route as TestGeminiImport } from './routes/test/gemini'
+import { Route as rootRoute } from "./routes/__root";
+import { Route as IndexImport } from "./routes/index";
+import { Route as TestIndexImport } from "./routes/test/index";
+import { Route as HistoryIndexImport } from "./routes/history/index";
+import { Route as TestGeminiImport } from "./routes/test/gemini";
+import { Route as ChatIndexInitMessageImport } from "./routes/chat/index.$initMessage";
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const TestIndexRoute = TestIndexImport.update({
-  id: '/test/',
-  path: '/test/',
+  id: "/test/",
+  path: "/test/",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const HistoryIndexRoute = HistoryIndexImport.update({
-  id: '/history/',
-  path: '/history/',
+  id: "/history/",
+  path: "/history/",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const TestSeleniumRoute = TestSeleniumImport.update({
   id: '/test/selenium',
@@ -44,101 +44,112 @@ const TestSeleniumRoute = TestSeleniumImport.update({
 } as any)
 
 const TestGeminiRoute = TestGeminiImport.update({
-  id: '/test/gemini',
-  path: '/test/gemini',
+  id: "/test/gemini",
+  path: "/test/gemini",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
+
+const ChatIndexInitMessageRoute = ChatIndexInitMessageImport.update({
+  id: "/chat/index/$initMessage",
+  path: "/chat/index/$initMessage",
+  getParentRoute: () => rootRoute,
+} as any);
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/test/gemini': {
-      id: '/test/gemini'
-      path: '/test/gemini'
-      fullPath: '/test/gemini'
-      preLoaderRoute: typeof TestGeminiImport
-      parentRoute: typeof rootRoute
-    }
-    '/test/selenium': {
-      id: '/test/selenium'
-      path: '/test/selenium'
-      fullPath: '/test/selenium'
-      preLoaderRoute: typeof TestSeleniumImport
-      parentRoute: typeof rootRoute
-    }
-    '/history/': {
-      id: '/history/'
-      path: '/history'
-      fullPath: '/history'
-      preLoaderRoute: typeof HistoryIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/test/': {
-      id: '/test/'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestIndexImport
-      parentRoute: typeof rootRoute
-    }
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/test/gemini": {
+      id: "/test/gemini";
+      path: "/test/gemini";
+      fullPath: "/test/gemini";
+      preLoaderRoute: typeof TestGeminiImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/history/": {
+      id: "/history/";
+      path: "/history";
+      fullPath: "/history";
+      preLoaderRoute: typeof HistoryIndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/test/": {
+      id: "/test/";
+      path: "/test";
+      fullPath: "/test";
+      preLoaderRoute: typeof TestIndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/chat/index/$initMessage": {
+      id: "/chat/index/$initMessage";
+      path: "/chat/index/$initMessage";
+      fullPath: "/chat/index/$initMessage";
+      preLoaderRoute: typeof ChatIndexInitMessageImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/test/gemini': typeof TestGeminiRoute
-  '/test/selenium': typeof TestSeleniumRoute
-  '/history': typeof HistoryIndexRoute
-  '/test': typeof TestIndexRoute
+  "/": typeof IndexRoute;
+  "/test/gemini": typeof TestGeminiRoute;
+  "/history": typeof HistoryIndexRoute;
+  "/test": typeof TestIndexRoute;
+  "/chat/index/$initMessage": typeof ChatIndexInitMessageRoute;
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/test/gemini': typeof TestGeminiRoute
-  '/test/selenium': typeof TestSeleniumRoute
-  '/history': typeof HistoryIndexRoute
-  '/test': typeof TestIndexRoute
+  "/": typeof IndexRoute;
+  "/test/gemini": typeof TestGeminiRoute;
+  "/history": typeof HistoryIndexRoute;
+  "/test": typeof TestIndexRoute;
+  "/chat/index/$initMessage": typeof ChatIndexInitMessageRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/test/gemini': typeof TestGeminiRoute
-  '/test/selenium': typeof TestSeleniumRoute
-  '/history/': typeof HistoryIndexRoute
-  '/test/': typeof TestIndexRoute
+  __root__: typeof rootRoute;
+  "/": typeof IndexRoute;
+  "/test/gemini": typeof TestGeminiRoute;
+  "/history/": typeof HistoryIndexRoute;
+  "/test/": typeof TestIndexRoute;
+  "/chat/index/$initMessage": typeof ChatIndexInitMessageRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/test/gemini' | '/test/selenium' | '/history' | '/test'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/test/gemini' | '/test/selenium' | '/history' | '/test'
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths:
+    | "/"
+    | "/test/gemini"
+    | "/history"
+    | "/test"
+    | "/chat/index/$initMessage";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/" | "/test/gemini" | "/history" | "/test" | "/chat/index/$initMessage";
   id:
-    | '__root__'
-    | '/'
-    | '/test/gemini'
-    | '/test/selenium'
-    | '/history/'
-    | '/test/'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/"
+    | "/test/gemini"
+    | "/history/"
+    | "/test/"
+    | "/chat/index/$initMessage";
+  fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  TestGeminiRoute: typeof TestGeminiRoute
-  TestSeleniumRoute: typeof TestSeleniumRoute
-  HistoryIndexRoute: typeof HistoryIndexRoute
-  TestIndexRoute: typeof TestIndexRoute
+  IndexRoute: typeof IndexRoute;
+  TestGeminiRoute: typeof TestGeminiRoute;
+  HistoryIndexRoute: typeof HistoryIndexRoute;
+  TestIndexRoute: typeof TestIndexRoute;
+  ChatIndexInitMessageRoute: typeof ChatIndexInitMessageRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -147,11 +158,12 @@ const rootRouteChildren: RootRouteChildren = {
   TestSeleniumRoute: TestSeleniumRoute,
   HistoryIndexRoute: HistoryIndexRoute,
   TestIndexRoute: TestIndexRoute,
-}
+  ChatIndexInitMessageRoute: ChatIndexInitMessageRoute,
+};
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {
@@ -163,7 +175,8 @@ export const routeTree = rootRoute
         "/test/gemini",
         "/test/selenium",
         "/history/",
-        "/test/"
+        "/test/",
+        "/chat/index/$initMessage"
       ]
     },
     "/": {
@@ -180,6 +193,9 @@ export const routeTree = rootRoute
     },
     "/test/": {
       "filePath": "test/index.tsx"
+    },
+    "/chat/index/$initMessage": {
+      "filePath": "chat/index.$initMessage.tsx"
     }
   }
 }

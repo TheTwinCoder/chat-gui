@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { useRouter } from "@tanstack/react-router";
 
 type ChatInputProps = {
   placeholder?: string;
@@ -11,12 +12,14 @@ type ChatInputProps = {
   disabled: boolean;
 };
 
-export default function ChatInput({
+export default function InitialInput({
   placeholder = "메시지를 입력하세요...",
   onNewMessage,
   disabled,
 }: ChatInputProps) {
   const [input, setInput] = useState<string>("");
+
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +28,10 @@ export default function ChatInput({
 
     onNewMessage(input.trim());
     setInput("");
+    router.navigate({
+      to: "/chat/index/$initMessage",
+      params: { initMessage: input },
+    });
   };
 
   const isDisabled = useMemo(
