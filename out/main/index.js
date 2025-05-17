@@ -6,9 +6,7 @@ const __filename = import.meta.filename;
 const __dirname = import.meta.dirname;
 const require2 = __cjs_mod__.createRequire(import.meta.url);
 const path = require2("node:path");
-const envPath = path.join(__dirname, "../../.env.local");
-console.log("Looking for .env.local at:", envPath);
-dotenv.config({ path: envPath });
+dotenv.config({ path: ".env.local" });
 function createWindow() {
   const preloadPath = path.join(__dirname, "../preload/index.mjs");
   const mainWindow = new BrowserWindow({

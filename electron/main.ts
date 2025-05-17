@@ -4,9 +4,7 @@ import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import * as dotenv from "dotenv";
 
 // Load environment variables from .env.local
-const envPath = path.join(__dirname, "../../.env.local");
-console.log("Looking for .env.local at:", envPath);
-dotenv.config({ path: envPath });
+dotenv.config({ path: ".env.local" });
 
 function createWindow(): void {
   // Create the browser window.
