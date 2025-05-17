@@ -5,7 +5,9 @@ import ChatMessage from "@/components/chat-message";
 import ChatInput from "@/components/chat-input";
 // import FeatureList from "@/components/feature-list";
 import { useEffect, useRef, useState } from "react";
-
+import { History } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
@@ -40,9 +42,16 @@ function RouteComponent() {
             >
               ChatGUI
             </h1>
-            <p className="text-sm text-gray-600">
-              당신의 원활한 업무처리를 위한 도우미
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-gray-600">
+                당신의 원활한 업무처리를 위한 도우미
+              </p>
+              <Link to="/history">
+                <Button variant="ghost" size="sm" className="ml-2">
+                  <History className="h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
 
