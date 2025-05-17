@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 declare global {
   interface Window {
@@ -49,7 +50,12 @@ function TestGeminiAPI() {
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Gemini API 테스트</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Gemini API 테스트</h1>
+        <Link to="/test">
+          <Button variant="outline">테스트 메인으로</Button>
+        </Link>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
