@@ -1,16 +1,18 @@
 import { app, shell, BrowserWindow, ipcMain } from "electron";
-const path = require("node:path");
+import path from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import * as dotenv from "dotenv";
 
 // Load environment variables from .env.local
 dotenv.config({ path: ".env.local" });
 
+import { generateGeminiResponse } from "./gemini";
+
 function createWindow(): void {
   // Create the browser window.
   const preloadPath = path.join(__dirname, "../preload/index.mjs");
   const mainWindow = new BrowserWindow({
-    width: 1200,
+    width: 800,
     height: 640,
     show: false,
     autoHideMenuBar: true,
@@ -40,6 +42,11 @@ function createWindow(): void {
     mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
   }
 }
+
+// Handle Gemini chat requests
+ipcMain.handle("gemini:chat", async (_, prompt: string) => {
+  return generateGeminiResponse(prompt);
+});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
