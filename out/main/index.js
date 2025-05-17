@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import { Builder } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
+import { JSDOM } from "jsdom";
 import __cjs_mod__ from "node:module";
 const __filename = import.meta.filename;
 const __dirname = import.meta.dirname;
@@ -30,19 +31,36 @@ async function generateGeminiResponse(prompt) {
     };
   }
 }
+const URL = "https://www.google.com/";
 async function testChromeDriver() {
-  const chromedriverPath = "C:\\chatgui\\chat-gui\\electron\\chromedriver.exe";
+  const chromedriverPath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "electron",
+    "chromedriver.exe"
+  );
   const serviceBuilder = new chrome.ServiceBuilder(chromedriverPath);
   const driver = await new Builder().forBrowser("chrome").setChromeService(serviceBuilder).build();
+  let cleanedHTML = "";
   try {
-    await driver.get("https://www.example.com");
+    await driver.get(URL);
     await new Promise((resolve) => setTimeout(resolve, 3e3));
+    const pageSource = await driver.getPageSource();
+    const dom = new JSDOM(pageSource);
+    const document = dom.window.document;
+    document.querySelectorAll("style").forEach((el) => el.remove());
+    document.querySelectorAll('link[rel="stylesheet"]').forEach((el) => el.remove());
+    document.querySelectorAll("[style]").forEach((el) => el.removeAttribute("style"));
+    cleanedHTML = document.documentElement.outerHTML;
+    console.log("Cleaned HTML:", cleanedHTML);
   } finally {
     await driver.quit();
   }
   return {
     success: true,
-    message: "Chrome driver test successful"
+    message: "Chrome driver test successful",
+    html: cleanedHTML
   };
 }
 dotenv.config({ path: ".env.local" });
