@@ -1,21 +1,35 @@
-import { Card } from "@/components/ui/card";
-import { createFileRoute } from "@tanstack/react-router";
-// import { ScrollArea } from "@/components/ui/scroll-area";
 import ChatInput from "@/components/chat-input";
-// import FeatureList from "@/components/feature-list";
-import { AiMsg, LoadingMsg, UserMsg } from "@/components/chat/message";
-import { QuestionMsg } from "@/components/question-msg";
-import { determineGoal } from "@/lib/gemini";
+import { ChatArea } from "@/components/chat/chat-area";
+import { ChatHeader } from "@/components/chat/chat-header";
+import { getActions } from "@/lib/gemini/askActions";
+import { askInitialQuestions } from "@/lib/gemini/askInitialQuestions";
+import { findInitialPage } from "@/lib/gemini/findInitialPage";
+import { structureGoal } from "@/lib/gemini/goalStructure";
 import type {
   GoalMsgType,
   InitMsgType,
   QuestionMsgType,
 } from "@/types/message";
-import { useEffect, useRef, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
+
+export type HistoryType = {
+  page: {
+    html: string;
+    description?: string;
+  };
+  action?: {
+    description: string;
+    type: "click" | "input" | "submit";
+    locatorType: "id" | "css";
+    locator: string;
+    value?: string;
+  }[];
+};
 
 function RouteComponent() {
   const [initialMsg, setInitialMsg] = useState<InitMsgType | null>(null);
@@ -25,34 +39,100 @@ function RouteComponent() {
   const [goalMsg, setGoalMsg] = useState<GoalMsgType | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [initialQuery, setInitialSiteName] = useState<string | null>(null);
+
+  const [history, setHistory] = useState<HistoryType[]>([]);
+
+  const [actionIdx, setActionIdx] = useState<number>(-1);
+
+  useEffect(() => {
+    console.log("history", history);
+    if (history.length == 0) return;
+    const last = history[history.length - 1];
+
+    (async () => {
+      if (last.action) {
+        for (let i = 0; i < last.action.length; i++) {
+          setActionIdx(i);
+          const { type, locatorType, locator, value } = last.action[i];
+          await window.api.seleniumInteract({
+            type,
+            locatorType,
+            locator,
+            value,
+          });
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+        setActionIdx(-1);
+
+        const pageHtml = await window.api.seleniumGetPageHtml();
+        setHistory((prev) => [...prev, { page: { html: pageHtml.data! } }]);
+      } else {
+        const { description, actions } = await getActions(
+          goalMsg!.goal,
+          history,
+          last.page.html
+        );
+        setHistory((prev) => {
+          const newHistory = [...prev];
+          newHistory[newHistory.length - 1].page.description = description;
+          newHistory[newHistory.length - 1].action = actions;
+          return newHistory;
+        });
+      }
+    })();
+  }, [history]);
 
   useEffect(() => {
     if (questionMsg && !isQuestionAllAnswered) {
-      setIsQuestionAllAnswered(
-        questionMsg.questions.every((question) => question.answer)
-      );
+      if (questionMsg.questions.every((question) => !!question.answer)) {
+        setIsQuestionAllAnswered(true);
 
+        (async () => {
+          setIsLoading(true);
+          const result = await structureGoal(
+            initialMsg!.text,
+            questionMsg.questions
+              .map((question) => question.question + ": " + question.answer)
+              .join("\n")
+          );
+          setGoalMsg({
+            type: "goal",
+            goal: result.structuredResult,
+            time: new Date(),
+          });
+          setIsLoading(false);
+        })();
+      }
+    }
+  }, [questionMsg, isQuestionAllAnswered, initialMsg]);
+
+  useEffect(() => {
+    if (goalMsg && !initialQuery) {
       (async () => {
-        const result = await determineGoal.initial(
-          `${initialMsg!.text}
+        setInitialSiteName("");
+        const result = await findInitialPage(goalMsg.goal);
+        setInitialSiteName(result.siteName);
+        await window.api.seleniumOpenUrl(result.url);
+        const pageHtml = await window.api.seleniumGetPageHtml();
+        console.log("pageHtml", pageHtml);
 
-${questionMsg.questions.map((question) => question.question + " " + question.answer).join("\n")}`
-        );
-        if (result.success && result.data) {
-          if (result.type === "goal") {
-            setGoalMsg({
-              type: "goal",
-              goal: result.data,
-              time: new Date(),
-            });
-          }
-        }
+        // 히스토리 초기화
+        setHistory([
+          {
+            page: {
+              html: pageHtml.data!,
+            },
+          },
+        ]);
+        setActionIdx(-1);
       })();
     }
-  }, [questionMsg, isQuestionAllAnswered]);
+  }, [goalMsg, initialQuery]);
 
   const handleNewMessage = async (text: string) => {
     setIsLoading(true);
+    setError(null);
 
     if (!initialMsg) {
       setInitialMsg({
@@ -62,28 +142,18 @@ ${questionMsg.questions.map((question) => question.question + " " + question.ans
       });
 
       try {
-        const result = await determineGoal.initial(text);
-        if (result.success && result.data) {
-          if (result.type === "question") {
-            setQuestionMsg({
-              type: "question",
-              questions: result.data,
-              time: new Date(),
-            });
-          } else {
-            setGoalMsg({
-              type: "goal",
-              goal: result.data,
-              time: new Date(),
-            });
-          }
-        } else {
-          setError("알 수 없는 오류가 발생했습니다.");
-        }
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다."
-        );
+        const result = await askInitialQuestions(text);
+        setQuestionMsg({
+          type: "question",
+          questions: result.questions,
+          time: new Date(),
+        });
+        // 히스토리 초기화
+        setHistory([]);
+        setActionIdx(-1);
+      } catch {
+        setError("알 수 없는 오류가 발생했습니다.");
+        setInitialMsg(null);
       } finally {
         setIsLoading(false);
       }
@@ -91,11 +161,6 @@ ${questionMsg.questions.map((question) => question.question + " " + question.ans
 
     setIsLoading(false);
   };
-
-  const bottomRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [goalMsg]);
 
   function handleAnswer(index: number, answer: string) {
     if (questionMsg) {
@@ -106,56 +171,32 @@ ${questionMsg.questions.map((question) => question.question + " " + question.ans
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <Card className="w-full max-w-md h-[650px] mx-auto overflow-hidden border-2 border-black rounded-3xl">
-        {/* Header */}
-        <div className="px-4 py-2 border-b border-black">
-          <div className="flex justify-between items-center">
-            <h1
-              className="text-2xl font-bold"
-              onClick={() => {
-                window.location.href = "/test";
-              }}
-            >
-              ChatGUI
-            </h1>
-            <p className="text-sm text-gray-600">
-              손쉬운 인터넷 사용을 위한 도우미
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+      <div className="container mx-auto p-4 h-screen flex flex-col">
+        <ChatHeader />
+        <div className="flex-1 flex flex-col mt-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+          <div className="flex-1 overflow-y-auto">
+            <ChatArea
+              initialMsg={initialMsg}
+              questionMsg={questionMsg}
+              goalMsg={goalMsg}
+              initialQuery={initialQuery}
+              isLoading={isLoading}
+              error={error}
+              onAnswer={handleAnswer}
+              history={history}
+              actionIdx={actionIdx}
+            />
+          </div>
+          <div className="border-t border-gray-200 dark:border-gray-700 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+            <ChatInput
+              placeholder="무엇을 하고 싶으신가요?"
+              onNewMessage={handleNewMessage}
+              disabled={isLoading}
+            />
           </div>
         </div>
-
-        {/* Chat Area */}
-        <div className="flex flex-col h-[700px] overflow-y-auto p-2 gap-2">
-          {initialMsg && (
-            <UserMsg text={initialMsg.text} time={initialMsg.time} />
-          )}
-          {questionMsg && (
-            <QuestionMsg
-              data={questionMsg}
-              onAnswer={handleAnswer}
-              disabled={false}
-            />
-          )}
-          {isLoading && (
-            <div className="px-4 py-2">
-              <LoadingMsg />
-            </div>
-          )}
-          {goalMsg && (
-            <AiMsg text={"목표가 설정되었습니다"} time={goalMsg.time} />
-          )}
-          {error && <div className="px-4 py-2 text-red-500">{error}</div>}
-          <div ref={bottomRef} />
-        </div>
-        <div className="sticky bottom-0 p-2 border-t border-gray-200 bg-white">
-          <ChatInput
-            placeholder="어떻게 도와드릴까요?"
-            onNewMessage={handleNewMessage}
-            disabled={isLoading}
-          />
-        </div>
-      </Card>
+      </div>
     </div>
   );
 }

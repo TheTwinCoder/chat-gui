@@ -37,7 +37,7 @@ export const GoalSchema = z.object({
   ),
 });
 
-export const GoalResponseSchema = GoalSchema.extend({
+export const GoalResponseSchema = z.object({
   structuredResult: GoalSchema,
 });
 

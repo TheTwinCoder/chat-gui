@@ -1,6 +1,5 @@
 import type { QuestionMsgType } from "@/types/message";
-import { AiMsg } from "./chat/message";
-import { cn } from "@/lib/utils";
+import { QuestionItem } from "./questions/question-item";
 
 export function QuestionMsg({
   data,
@@ -22,51 +21,16 @@ export function QuestionMsg({
       : data.questions.slice(0, currentQuestionIndex + 1);
 
   return (
-    <>
-      {visibleQuestions.map(
-        ({ question, answerCandidate, answerUnit, answer }, index) => (
-          <div
-            key={index}
-            className={cn(
-              "flex flex-col gap-2 p-3 rounded-lg transition-colors shadow-md",
-              answer && "bg-gray-50 dark:bg-gray-800"
-            )}
-          >
-            <span>
-              <span className="font-bold">Q{index + 1} </span>
-              {question}
-            </span>
-            <div className="flex flex-col gap-2">
-              {answer ? (
-                <p className="text-sm">{answer}</p>
-              ) : (
-                answerCandidate.map((label, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name={`question-${index}-${idx}`}
-                      value={label}
-                      checked={label === answer}
-                      disabled={disabled}
-                      onChange={() => onAnswer(index, label)}
-                    />
-                    <label htmlFor={`question-${index}-${idx}`}>{label}</label>
-                  </div>
-                ))
-              )}
-            </div>
-            {answerUnit && !answer && (
-              <input
-                type="text"
-                disabled={disabled}
-                placeholder={`답변을 입력하세요 (단위: ${answerUnit})`}
-                onChange={(e) => onAnswer(index, e.target.value)}
-                className="px-2 py-1 border rounded-md"
-              />
-            )}
-          </div>
-        )
-      )}
-    </>
+    <div className="flex flex-col gap-4">
+      {visibleQuestions.map((question, index) => (
+        <QuestionItem
+          key={index}
+          question={question}
+          index={index}
+          onAnswer={onAnswer}
+          disabled={disabled}
+        />
+      ))}
+    </div>
   );
 }

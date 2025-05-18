@@ -21,6 +21,8 @@ export const determineGoal = {
       determineGoalConfig
     );
 
+    console.log(data.data!.candidates![0].content!.parts![0].text!);
+
     return parse(data.data!.candidates![0].content!.parts![0].text!);
   },
 };

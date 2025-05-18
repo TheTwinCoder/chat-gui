@@ -7,14 +7,23 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 import { generateGeminiResponse } from "./gemini";
-import { testChromeDriver } from "./selenium";
+import {
+  initDriver,
+  quitDriver,
+  openUrl,
+  getCurrentUrl,
+  getPageHtml,
+  testChromeDriver,
+  performInteraction,
+} from "./selenium";
 import type { GenerateContentConfig } from "@google/genai";
+import type { InteractionAction } from "../src/types/selenium";
 
 function createWindow(): void {
   // Create the browser window.
   const preloadPath = path.join(__dirname, "../preload/index.mjs");
   const mainWindow = new BrowserWindow({
-    width: 500,
+    width: 470,
     height: 700,
     show: false,
     autoHideMenuBar: true,
@@ -51,9 +60,43 @@ ipcMain.handle(
   }
 );
 
-//handle selenium driver requests
+// Handle selenium test requests
 ipcMain.handle("selenium:test", async () => {
   return testChromeDriver();
+});
+
+// Handle selenium driver initialization
+ipcMain.handle("selenium:init", async () => {
+  return initDriver();
+});
+
+// Handle selenium driver quit
+ipcMain.handle("selenium:quit", async () => {
+  return quitDriver();
+});
+
+// Handle selenium open URL
+ipcMain.handle("selenium:openUrl", async (_, url: string) => {
+  const result = await openUrl(url);
+  if (result.success) {
+    return getPageHtml();
+  }
+  return result;
+});
+
+// Handle selenium interaction (click, input, submit)
+ipcMain.handle("selenium:interact", async (_, action: InteractionAction) => {
+  return performInteraction(action);
+});
+
+// Handle selenium get current URL
+ipcMain.handle("selenium:getCurrentUrl", async () => {
+  return getCurrentUrl();
+});
+
+// Handle selenium get page HTML
+ipcMain.handle("selenium:getPageHtml", async () => {
+  return getPageHtml();
 });
 
 // This method will be called when Electron has finished
@@ -82,8 +125,13 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on("window-all-closed", () => {
+app.on("window-all-closed", async () => {
+  await quitDriver();
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+app.on("before-quit", async () => {
+  await quitDriver();
 });
